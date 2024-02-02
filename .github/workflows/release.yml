@@ -7,6 +7,8 @@ on:
     tags:
       - 'v*'  
 
+  pull_request:
+    branches: [develop]      
 jobs:
   build_test_package:
     runs-on: ubuntu-latest
