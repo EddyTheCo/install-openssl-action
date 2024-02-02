@@ -43,19 +43,18 @@ runs:
     - name: Configure-Wasm
       if: startsWith(inputs.build_wasm, 'true')
       working-directory: ${{ github.workspace }}/openssl
-      run: emconfigure ./Configure  no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  
+      run: emconfigure ./Configure  no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  --prefix ${{ inputs.Install-Dir }}
       shell: 'bash'
 
     - name: Build-Linux
       working-directory: ${{ github.workspace }}/openssl
-      run: emmake make "-j2"
+      run: emmake make 
       shell: 'bash'
 
 
     - name: Install-Linux
       working-directory: ${{ github.workspace }}/openssl
       run: |
-        mv openssl/*.a ${{ inputs.Install-Dir }}/lib
-        cp -r openssl/include/openssl ${{ inputs.Install-Dir }}/include
+        ls -R ${{ inputs.Install-Dir }}
       shell: 'bash'
     
