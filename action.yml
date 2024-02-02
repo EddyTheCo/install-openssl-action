@@ -19,7 +19,8 @@ runs:
     - uses: actions/checkout@v4
       with:
         repository: openssl/openssl
-        ref: ${{ inputs.version }}
+        ref: ${{ inputs.ref }}
+        path: 'openssl'  
 
     - name: Install dependencies on ubuntu
       shell: 'bash' 
@@ -43,6 +44,7 @@ runs:
 
     - name: Configure-Wasm
       if: startsWith(inputs.build_wasm, 'true')
+      working-directory: ${{ github.workspace }}/openssl
       run: emconfigure ./Configure  no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  
       shell: 'bash'
 
