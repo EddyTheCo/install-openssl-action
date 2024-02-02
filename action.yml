@@ -3,7 +3,7 @@ inputs:
   ref:
     default: 'openssl-3.2.1'
   emsdk_version:
-    default: '3.1.25' 
+    default: '3.1.50' 
   build_wasm:
     default: true
   Install-Dir:
@@ -36,11 +36,13 @@ runs:
         ndk-version: r25c
         add-to-path: false
 
-    - uses: mymindstorm/setup-emsdk@v11
+    - uses: mymindstorm/setup-emsdk@v14
       if: startsWith(inputs.build_wasm,'true')
       with:
         version: ${{ inputs.emsdk_version }}
         actions-cache-folder: 'emsdk-cache'
+    - name: Verify
+      run: emcc -v
 
     - name: Configure-Wasm
       if: startsWith(inputs.build_wasm, 'true')
