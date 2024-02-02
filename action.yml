@@ -39,9 +39,6 @@ runs:
     - uses: mymindstorm/setup-emsdk@v14
       if: startsWith(inputs.build_wasm,'true')
 
-    - name: Verify
-      shell: 'bash' 
-      run: emcc -v
 
     - name: Configure-Wasm
       if: startsWith(inputs.build_wasm, 'true')
@@ -51,7 +48,7 @@ runs:
 
     - name: Build-Linux
       working-directory: ${{ github.workspace }}/openssl
-      run: make "-j2"
+      run: emmake make "-j2"
       shell: 'bash'
 
 
