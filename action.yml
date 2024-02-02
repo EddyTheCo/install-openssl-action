@@ -38,9 +38,6 @@ runs:
 
     - uses: mymindstorm/setup-emsdk@v14
       if: startsWith(inputs.build_wasm,'true')
-      with:
-        version: ${{ inputs.emsdk_version }}
-        actions-cache-folder: 'emsdk-cache'
 
     - name: Verify
       shell: 'bash' 
