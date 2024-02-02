@@ -41,7 +41,9 @@ runs:
       with:
         version: ${{ inputs.emsdk_version }}
         actions-cache-folder: 'emsdk-cache'
+
     - name: Verify
+      shell: 'bash' 
       run: emcc -v
 
     - name: Configure-Wasm
