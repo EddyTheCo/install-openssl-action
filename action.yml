@@ -1,7 +1,7 @@
 name: build-openssl
 inputs:
-  version:
-    default: '3.2.1'
+  ref:
+    default: 'openssl-3.2.1'
   emsdk_version:
     default: '3.1.25' 
   build_wasm:
