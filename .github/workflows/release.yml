@@ -16,7 +16,7 @@ jobs:
     steps:
 
       - name: Build-install-openssl-tag
-        uses : EddyTheCo/install-openssl-action/@main
+        uses : EddyTheCo/install-openssl-action/@test
       
 
       - name: Package 
