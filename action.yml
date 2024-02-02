@@ -1,0 +1,60 @@
+name: build-openssl
+inputs:
+  version:
+    default: '3.2.1'
+  emsdk_version:
+    default: '3.1.25' 
+  build_wasm:
+    default: true
+  Install-Dir:
+    default:  ${{ runner.temp }}/openssl-install
+  build_android:
+    default: 'none'
+
+runs:
+
+  using: "composite"
+  steps:
+
+    - uses: actions/checkout@v3
+      with:
+        repository: openssl/openssl
+        ref: ${{ inputs.version }}
+        path: 'openssl'
+
+    - name: Install dependencies on ubuntu
+      shell: 'bash' 
+      run: |
+        sudo apt-get update
+        sudo apt-get install perl libtext-template-perl 
+
+    - name: Configure NDK
+      if: ( ! startsWith(inputs.build_android,'none') )
+      uses: nttld/setup-ndk@v1
+      id: setup-ndk
+      with:
+        ndk-version: r25c
+        add-to-path: false
+
+    - uses: mymindstorm/setup-emsdk@v11
+      if: startsWith(inputs.build_wasm,'true')
+      with:
+        version: ${{ inputs.emsdk_version }}
+        actions-cache-folder: 'emsdk-cache'
+
+    - name: Configure-Wasm
+      if: startsWith(inputs.build_wasm, 'true')
+      run: emconfigure ./Configure  no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  
+      shell: 'bash'
+
+    - name: Build-Linux
+      run: make "-j2"
+      shell: 'bash'
+
+
+    - name: Install-Linux
+      run: |
+        mv openssl/*.a ${{ inputs.Install-Dir }}/lib
+        cp -r openssl/include/openssl ${{ inputs.Install-Dir }}/include
+      shell: 'bash'
+    
