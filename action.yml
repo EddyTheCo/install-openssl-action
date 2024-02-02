@@ -49,11 +49,13 @@ runs:
       shell: 'bash'
 
     - name: Build-Linux
+      working-directory: ${{ github.workspace }}/openssl
       run: make "-j2"
       shell: 'bash'
 
 
     - name: Install-Linux
+      working-directory: ${{ github.workspace }}/openssl
       run: |
         mv openssl/*.a ${{ inputs.Install-Dir }}/lib
         cp -r openssl/include/openssl ${{ inputs.Install-Dir }}/include
