@@ -15,9 +15,13 @@ jobs:
 
     steps:
 
-      - name: Build-install-openssl-tag
-        uses : EddyTheCo/install-openssl-action/@test
+      - name: Build-install-openssl-dev
+        if: ( ! startsWith(github.ref, 'refs/tags/v') )
+        uses : EddyTheCo/install-openssl-action/@${{ github.head_ref }}
       
+      - name: Build-install-openssl-tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses : EddyTheCo/install-openssl-action/@main
 
       - name: Package 
         working-directory: ${{ runner.temp }}/openssl-install
