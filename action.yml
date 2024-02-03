@@ -44,8 +44,7 @@ runs:
       if: startsWith(inputs.build_wasm, 'true')
       working-directory: ${{ github.workspace }}/openssl
       run: |
-        export CC=emcc
-        export CXX=emcc
+        mkdir -p ${{ inputs.Install-Dir }}
         emconfigure ./Configure  --cross-compile-prefix="" no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  --prefix ${{ inputs.Install-Dir }}
       shell: 'bash'
 
