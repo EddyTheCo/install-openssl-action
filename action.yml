@@ -3,7 +3,7 @@ inputs:
   ref:
     default: 'openssl-3.2.1'
   emsdk_version:
-    default: '3.1.25' 
+    default: '3.1.50' 
   build_wasm:
     default: true
   Install-Dir:
@@ -36,26 +36,28 @@ runs:
         ndk-version: r25c
         add-to-path: false
 
-    - uses: mymindstorm/setup-emsdk@v11
+    - uses: mymindstorm/setup-emsdk@v14
       if: startsWith(inputs.build_wasm,'true')
-      with:
-        version: ${{ inputs.emsdk_version }}
-        actions-cache-folder: 'emsdk-cache'
+
 
     - name: Configure-Wasm
       if: startsWith(inputs.build_wasm, 'true')
       working-directory: ${{ github.workspace }}/openssl
-      run: emconfigure ./Configure  no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  
+      run: |
+        mkdir -p ${{ inputs.Install-Dir }}
+        emconfigure ./Configure  --cross-compile-prefix="" no-docs no-tests no-external-tests no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  no-afalgeng --api=3.0 no-deprecated --prefix=${{ inputs.Install-Dir }}
       shell: 'bash'
 
     - name: Build-Linux
-      run: make "-j2"
+      working-directory: ${{ github.workspace }}/openssl
+      run: emmake make 
       shell: 'bash'
 
 
     - name: Install-Linux
+      working-directory: ${{ github.workspace }}/openssl
       run: |
-        mv openssl/*.a ${{ inputs.Install-Dir }}/lib
-        cp -r openssl/include/openssl ${{ inputs.Install-Dir }}/include
+        emmake make install
+        ls -R ${{ inputs.Install-Dir }}
       shell: 'bash'
     
