@@ -69,7 +69,11 @@ runs:
     - name: Build-Linux-Android
       if: ( ! startsWith(inputs.build_android,'none') )
       working-directory: ${{ github.workspace }}/openssl
-      run: make
+      run: |
+        export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
+        export ANDROID_TOOLCHAIN="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin"
+        export PATH="$ANDROID_TOOLCHAIN:$PATH"
+        make
       shell: 'bash'
 
 
