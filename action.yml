@@ -3,7 +3,7 @@ inputs:
   ref:
     default: 'openssl-3.2.1'
   emsdk_version:
-    default: '3.1.50' 
+    default: '3.1.50'
   build_wasm:
     default: true
   Install-Dir:
@@ -20,13 +20,13 @@ runs:
       with:
         repository: openssl/openssl
         ref: ${{ inputs.ref }}
-        path: 'openssl'  
+        path: 'openssl'
 
     - name: Install dependencies on ubuntu
-      shell: 'bash' 
+      shell: 'bash'
       run: |
         sudo apt-get update
-        sudo apt-get install perl libtext-template-perl 
+        sudo apt-get install perl libtext-template-perl
 
     - name: Configure NDK
       if: ( ! startsWith(inputs.build_android,'none') )
@@ -34,7 +34,6 @@ runs:
       id: setup-ndk
       with:
         ndk-version: r25c
-        add-to-path: false
 
     - uses: mymindstorm/setup-emsdk@v14
       if: startsWith(inputs.build_wasm,'true')
@@ -48,16 +47,50 @@ runs:
         emconfigure ./Configure  --cross-compile-prefix="" no-docs no-tests no-external-tests no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  no-afalgeng --api=3.0 no-deprecated --prefix=${{ inputs.Install-Dir }}
       shell: 'bash'
 
-    - name: Build-Linux
+    - name: Configure-Android
+      if: ( ! startsWith(inputs.build_android,'none') )
       working-directory: ${{ github.workspace }}/openssl
-      run: emmake make 
+      run: |
+        export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
+        export ANDROID_TOOLCHAIN="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin"
+        export PATH="$ANDROID_TOOLCHAIN:$PATH"
+        echo $PATH
+        mkdir -p ${{ inputs.Install-Dir }}
+        ./Configure  no-docs no-tests no-external-tests no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  no-afalgeng --api=3.0 no-deprecated --prefix=${{ inputs.Install-Dir }} ${{ inputs.build_android }}
       shell: 'bash'
 
 
-    - name: Install-Linux
+    - name: Build-Linux-wasm
+      if: startsWith(inputs.build_wasm, 'true')
+      working-directory: ${{ github.workspace }}/openssl
+      run: emmake make
+      shell: 'bash'
+
+    - name: Build-Linux-Android
+      if: ( ! startsWith(inputs.build_android,'none') )
+      working-directory: ${{ github.workspace }}/openssl
+      run: |
+        export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
+        export ANDROID_TOOLCHAIN="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin"
+        export PATH="$ANDROID_TOOLCHAIN:$PATH"
+        make
+      shell: 'bash'
+
+
+    - name: Install-Linux-wasm
+      if: startsWith(inputs.build_wasm, 'true')
       working-directory: ${{ github.workspace }}/openssl
       run: |
         emmake make install
         ls -R ${{ inputs.Install-Dir }}
       shell: 'bash'
-    
+
+    - name: Install-Linux-Android
+      if: ( ! startsWith(inputs.build_android,'none') )
+      working-directory: ${{ github.workspace }}/openssl
+      run: |
+        make install
+        ls -R ${{ inputs.Install-Dir }}
+      shell: 'bash'
+
+
