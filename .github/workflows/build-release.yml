@@ -3,30 +3,42 @@ name: release
 run-name: ${{ github.actor }} ${{ github.event_name }} to ${{ github.base_ref }}
 on:
 
-  push: 
+  push:
     tags:
-      - 'v*'  
+      - 'v*'
 
 jobs:
   build_test_package:
+    strategy:
+      matrix:
+        build_wasm: [true]
+        build_android: ['none']
+        include:
+          - build_wasm: false
+            build_android: 'android-arm'
+          - build_wasm: false
+            build_android: 'android-arm64'
     runs-on: ubuntu-latest
 
     steps:
 
-      
+
       - name: Build-install-openssl-tag
         uses : EddyTheCo/install-openssl-action/@main
+        with:
+          build_wasm: ${{ matrix.build_wasm }}
+          build_android: ${{ matrix.build_android }}
 
-      - name: Package 
+      - name: Package
         working-directory: ${{ runner.temp }}/openssl-install
         run: |
           cmake -E make_directory ${{runner.temp}}/packages
-          cmake -E tar c ${{runner.temp}}/packages/openssl-wasm.tar -- . 
+          cmake -E tar c ${{runner.temp}}/packages/openssl-wasm_${{ matrix.build_wasm }}-android_${{ matrix.build_android }}.tar  -- .
 
 
       - uses: actions/upload-artifact@v3
         with:
-          name: openssl-wasm
+          name: openssl-wasm_${{ matrix.build_wasm }}-android_${{ matrix.build_android }} 
           path: ${{ runner.temp }}/packages/*
 
 
@@ -39,16 +51,16 @@ jobs:
       contents: write
 
     steps:
-          
+
       - uses: actions/checkout@v3
-    
+
       - uses: actions/download-artifact@v3
         with:
-           path: artifacts
+          path: artifacts
       - name: Display structure of downloaded files
         run: ls -R
-          
-      - name: Releases 
+
+      - name: Releases
         uses: softprops/action-gh-release@v1
         with:
-          files: ./artifacts/*/*       
+          files: ./artifacts/*/*
