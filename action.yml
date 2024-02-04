@@ -51,9 +51,10 @@ runs:
       if: ( ! startsWith(inputs.build_android,'none') )
       working-directory: ${{ github.workspace }}/openssl
       run: |
-        echo $PATH
-        ls -R /opt/hostedtoolcache/ndk/r25c/x64/
         export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
+        export ANDROID_TOOLCHAIN="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin"
+        export PATH="$ANDROID_TOOLCHAIN:$PATH"
+        echo $PATH
         mkdir -p ${{ inputs.Install-Dir }}
         ./Configure  no-docs no-tests no-external-tests no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  no-afalgeng --api=3.0 no-deprecated --prefix=${{ inputs.Install-Dir }} ${{ inputs.build_android }}
       shell: 'bash'
