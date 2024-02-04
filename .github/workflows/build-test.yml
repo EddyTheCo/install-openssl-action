@@ -4,21 +4,33 @@ run-name: ${{ github.actor }} ${{ github.event_name }} to ${{ github.base_ref }}
 on:
 
   push:
-    branches: [develop]      
+    branches: [develop]
 jobs:
   build_test_package:
+    strategy:
+      matrix:
+        build_wasm: [true]
+        build_android: ['none']
+        include:
+          - build_wasm: false
+            build_android: 'android-arm'
+          - build_wasm: false
+            build_android: 'android-arm64'
     runs-on: ubuntu-latest
 
     steps:
 
       - name: Build-install-openssl-dev
         uses : EddyTheCo/install-openssl-action/@develop
-      
-      - name: Package 
+        with:
+          build_wasm: ${{ matrix.build_wasm }}
+          build_android: ${{ matrix.build_android }}
+
+      - name: Package
         working-directory: ${{ runner.temp }}/openssl-install
         run: |
           cmake -E make_directory ${{runner.temp}}/packages
-          cmake -E tar c ${{runner.temp}}/packages/openssl-wasm.tar -- . 
+          cmake -E tar c ${{runner.temp}}/packages/openssl-wasm.tar -- .
 
 
       - uses: actions/upload-artifact@v3
