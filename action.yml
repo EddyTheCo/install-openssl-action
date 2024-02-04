@@ -12,8 +12,6 @@ inputs:
     default: 'none'
 
 runs:
-  env:
-    ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
 
   using: "composite"
   steps:
@@ -36,7 +34,6 @@ runs:
       id: setup-ndk
       with:
         ndk-version: r25c
-        add-to-path: false
 
     - uses: mymindstorm/setup-emsdk@v14
       if: startsWith(inputs.build_wasm,'true')
