@@ -1,11 +1,9 @@
 name: build-openssl
-env:
-  ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
 inputs:
   ref:
     default: 'openssl-3.2.1'
   emsdk_version:
-    default: '3.1.50' 
+    default: '3.1.50'
   build_wasm:
     default: true
   Install-Dir:
@@ -14,6 +12,8 @@ inputs:
     default: 'none'
 
 runs:
+  env:
+    ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
 
   using: "composite"
   steps:
@@ -22,13 +22,13 @@ runs:
       with:
         repository: openssl/openssl
         ref: ${{ inputs.ref }}
-        path: 'openssl'  
+        path: 'openssl'
 
     - name: Install dependencies on ubuntu
-      shell: 'bash' 
+      shell: 'bash'
       run: |
         sudo apt-get update
-        sudo apt-get install perl libtext-template-perl 
+        sudo apt-get install perl libtext-template-perl
 
     - name: Configure NDK
       if: ( ! startsWith(inputs.build_android,'none') )
@@ -41,7 +41,6 @@ runs:
     - uses: mymindstorm/setup-emsdk@v14
       if: startsWith(inputs.build_wasm,'true')
 
-        
 
     - name: Configure-Wasm
       if: startsWith(inputs.build_wasm, 'true')
@@ -50,26 +49,26 @@ runs:
         mkdir -p ${{ inputs.Install-Dir }}
         emconfigure ./Configure  --cross-compile-prefix="" no-docs no-tests no-external-tests no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  no-afalgeng --api=3.0 no-deprecated --prefix=${{ inputs.Install-Dir }}
       shell: 'bash'
-    
+
     - name: Configure-Android
       if: ( ! startsWith(inputs.build_android,'none') )
       working-directory: ${{ github.workspace }}/openssl
       run: |
         mkdir -p ${{ inputs.Install-Dir }}
-        ./Configure  no-docs no-tests no-external-tests no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  no-afalgeng --api=3.0 no-deprecated --prefix=${{ inputs.Install-Dir }} ${{ inputs.build_android }} 
+        ./Configure  no-docs no-tests no-external-tests no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  no-afalgeng --api=3.0 no-deprecated --prefix=${{ inputs.Install-Dir }} ${{ inputs.build_android }}
       shell: 'bash'
 
 
     - name: Build-Linux-wasm
       if: startsWith(inputs.build_wasm, 'true')
       working-directory: ${{ github.workspace }}/openssl
-      run: emmake make 
+      run: emmake make
       shell: 'bash'
 
     - name: Build-Linux-Android
       if: ( ! startsWith(inputs.build_android,'none') )
       working-directory: ${{ github.workspace }}/openssl
-      run: make 
+      run: make
       shell: 'bash'
 
 
@@ -80,7 +79,7 @@ runs:
         emmake make install
         ls -R ${{ inputs.Install-Dir }}
       shell: 'bash'
-    
+
     - name: Install-Linux-Android
       if: ( ! startsWith(inputs.build_android,'none') )
       working-directory: ${{ github.workspace }}/openssl
@@ -88,5 +87,5 @@ runs:
         make install
         ls -R ${{ inputs.Install-Dir }}
       shell: 'bash'
-    
-    
+
+
