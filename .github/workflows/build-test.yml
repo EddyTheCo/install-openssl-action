@@ -30,12 +30,12 @@ jobs:
         working-directory: ${{ runner.temp }}/openssl-install
         run: |
           cmake -E make_directory ${{runner.temp}}/packages
-          cmake -E tar c ${{runner.temp}}/packages/openssl-wasm.tar -- .
+          cmake -E tar c ${{runner.temp}}/packages/openssl-wasm_${{ matrix.build_wasm }}-android_${{ matrix.build_android }}.tar  -- .
 
 
       - uses: actions/upload-artifact@v3
         with:
-          name: openssl-wasm
+          name: openssl-wasm_${{ matrix.build_wasm }}-android_${{ matrix.build_android }} 
           path: ${{ runner.temp }}/packages/*
 
 
