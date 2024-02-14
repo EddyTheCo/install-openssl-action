@@ -35,7 +35,7 @@ jobs:
           cmake -E tar c ${{runner.temp}}/packages/openssl-wasm_${{ matrix.build_wasm }}-android_${{ matrix.build_android }}.tar  -- .
 
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: openssl-wasm_${{ matrix.build_wasm }}-android_${{ matrix.build_android }} 
           path: ${{ runner.temp }}/packages/*
