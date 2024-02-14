@@ -56,7 +56,7 @@ runs:
         export PATH="$ANDROID_TOOLCHAIN:$PATH"
         echo $PATH
         mkdir -p ${{ inputs.Install-Dir }}
-        ./Configure  no-docs no-tests no-external-tests no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-shared no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  no-afalgeng --api=3.0 no-deprecated --prefix=${{ inputs.Install-Dir }} ${{ inputs.build_android }}
+        ./Configure shared no-docs no-tests no-external-tests no-asm no-async no-egd  no-ktls no-module no-posix-io no-secure-memory no-sock no-stdio no-thread-pool no-threads no-ui-console no-weak-ssl-ciphers  no-afalgeng --api=3.0 no-deprecated --prefix=${{ inputs.Install-Dir }} ${{ inputs.build_android }}
       shell: 'bash'
 
 
