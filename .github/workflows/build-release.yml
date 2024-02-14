@@ -28,16 +28,24 @@ jobs:
           build_wasm: ${{ matrix.build_wasm }}
           build_android: ${{ matrix.build_android }}
 
+      - uses: actions/checkout@v4
+        with:
+          path: installAction
+          sparse-checkout: |
+            openssl.cmake
+          sparse-checkout-cone-mode: false
+
       - name: Package
         working-directory: ${{ runner.temp }}/openssl-install
         run: |
+          cp ${{ github.workspace }}/installAction/openssl.cmake .
           cmake -E make_directory ${{runner.temp}}/packages
           cmake -E tar c ${{runner.temp}}/packages/openssl-wasm_${{ matrix.build_wasm }}-android_${{ matrix.build_android }}.tar  -- .
 
 
       - uses: actions/upload-artifact@v4
         with:
-          name: openssl-wasm_${{ matrix.build_wasm }}-android_${{ matrix.build_android }} 
+          name: openssl-wasm_${{ matrix.build_wasm }}-android_${{ matrix.build_android }}
           path: ${{ runner.temp }}/packages/*
 
 
@@ -62,6 +70,5 @@ jobs:
         with:
           files: |
             ./artifacts/*/*
-            openssl.cmake
 
 
