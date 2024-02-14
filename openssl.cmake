@@ -14,10 +14,10 @@ function(create_targets)
 	if(ANDROID)
 		set_target_properties(OpenSSL::Crypto PROPERTIES
 			IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-			IMPORTED_LOCATION "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/lib/libcrypto.a")
+			IMPORTED_LOCATION "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/lib/libcrypto.so")
 		set_target_properties(OpenSSL::SSL PROPERTIES
 			IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-			IMPORTED_LOCATION "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/lib/libcrypto.a")
+			IMPORTED_LOCATION "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/lib/libcrypto.so")
 	endif(ANDROID)
 endfunction()
 
